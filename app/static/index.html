@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Job Cost Tracker</title>
+  <link rel="manifest" href="/static/manifest.json">
+  <link rel="icon" href="/static/icon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#2a78d6">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="/static/icon.svg" alt="" width="28" height="28">
+      <span>Job Cost Tracker</span>
+    </div>
+    <div class="sync-status">
+      <span id="lastSync">Not synced yet</span>
+      <button id="refreshBtn" class="btn ghost" type="button">Refresh now</button>
+    </div>
+    <div class="top-actions">
+      <button id="exportBtn" class="btn" type="button">Export Excel</button>
+      <button id="addBtn" class="btn primary" type="button">+ Add job</button>
+      <button id="userBtn" class="btn user-chip" type="button" title="Switch user">…</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="tiles" id="tiles" aria-label="Summary"></section>
+
+    <section class="filters" aria-label="Filters">
+      <input id="search" type="search" placeholder="Search job #, name, customer" aria-label="Search">
+      <select id="statusFilter" aria-label="Status">
+        <option value="all">All statuses</option>
+        <option value="over">Over budget</option>
+        <option value="trending">Trending over</option>
+        <option value="ok">On track</option>
+      </select>
+      <select id="customerFilter" aria-label="Customer"><option value="all">All customers</option></select>
+      <select id="sortBy" aria-label="Sort">
+        <option value="over">Sort: Most over budget</option>
+        <option value="profit">Sort: Lowest projected profit</option>
+        <option value="number">Sort: Job number</option>
+        <option value="customer">Sort: Customer</option>
+        <option value="newest">Sort: Newest added</option>
+      </select>
+      <label class="check"><input id="starredOnly" type="checkbox"> My jobs only</label>
+      <label class="check"><input id="showHidden" type="checkbox"> Show hidden</label>
+    </section>
+
+    <div class="legend" aria-hidden="true">
+      <span><i class="lg-fill"></i>Spent</span>
+      <span><i class="lg-mark"></i>Estimate</span>
+      <span><i class="lg-inv"></i>Invoiced</span>
+      <span class="lg-status"><b class="ok">✓</b> On track <b class="trending">▲</b> Trending over <b class="over">!</b> Over</span>
+    </div>
+
+    <section id="jobs" class="job-grid" aria-live="polite"></section>
+    <p id="empty" class="empty" hidden></p>
+  </main>
+
+  <!-- Who are you? -->
+  <dialog id="userDialog" class="dialog small">
+    <h2>Who's using the tracker?</h2>
+    <p class="muted">Pick your name so your starred jobs, hidden jobs and filters are saved for you. No password needed.</p>
+    <div id="userList" class="user-list"></div>
+    <form id="newUserForm" class="row">
+      <input id="newUserName" placeholder="Or add your name" maxlength="60" required>
+      <button class="btn primary" type="submit">Continue</button>
+    </form>
+  </dialog>
+
+  <!-- Add / edit job -->
+  <dialog id="jobDialog" class="dialog">
+    <form id="jobForm" method="dialog">
+      <h2 id="jobFormTitle">Add job</h2>
+      <div id="lookupSection">
+        <label for="jobNumber">Job number</label>
+        <div class="row">
+          <input id="jobNumber" placeholder="e.g. 24-146" autocomplete="off">
+          <button id="lookupBtn" class="btn" type="button">Find in QuickBooks</button>
+        </div>
+        <div id="lookupResults" class="lookup-results"></div>
+      </div>
+      <div class="form-grid">
+        <label>Labor estimate<input name="est_labor" type="number" min="0" step="0.01" required></label>
+        <label>Material estimate<input name="est_material" type="number" min="0" step="0.01" required></label>
+        <label>Subcontractor estimate<input name="est_sub" type="number" min="0" step="0.01" required></label>
+        <label>Direct expenses / misc estimate<input name="est_misc" type="number" min="0" step="0.01" required></label>
+        <label>Contract price<input name="contract" type="number" min="0" step="0.01" required></label>
+        <label><span>% complete <span class="muted">(optional)</span></span><input name="pct_complete" type="number" min="0" max="100" step="1"></label>
+      </div>
+      <p id="formSummary" class="form-summary"></p>
+      <p id="jobFormError" class="error" hidden></p>
+      <div class="dialog-actions">
+        <button class="btn" type="button" data-close>Cancel</button>
+        <button id="jobSaveBtn" class="btn primary" type="submit">Save job</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Job detail -->
+  <dialog id="detailDialog" class="dialog wide">
+    <div id="detailBody"></div>
+  </dialog>
+
+  <!-- Confirm delete -->
+  <dialog id="confirmDialog" class="dialog small">
+    <h2 id="confirmTitle">Delete job?</h2>
+    <p id="confirmText"></p>
+    <div class="dialog-actions">
+      <button class="btn" type="button" data-close>Cancel</button>
+      <button id="confirmOk" class="btn danger" type="button">Delete for everyone</button>
+    </div>
+  </dialog>
+
+  <div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+  <div id="toast" class="toast" role="status" hidden></div>
+
+  <script src="/static/app.js" type="module"></script>
+</body>
+</html>
