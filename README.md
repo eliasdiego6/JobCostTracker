@@ -14,6 +14,23 @@ py -3.13 -m venv .venv
 
 Try adding job **24-146** or **24-150**; they're in the fake QuickBooks data but not yet in the tracker.
 
+## QuickBooks discovery (run on the server)
+
+Read-only look at how jobs, accounts and items are set up in QuickBooks. Needs QuickBooks
+Desktop open with the company file, on the same PC.
+
+```powershell
+git clone https://github.com/eliasdiego6/JobCostTracker.git
+cd JobCostTracker
+py -m venv .venv
+.\.venv\Scripts\python -m pip install -r requirements.txt
+.\.venv\Scripts\python -m scripts.qb_discover 24-117     # use a real job number
+```
+
+The first run makes QuickBooks ask whether to allow "Job Cost Tracker" access. A QB Admin must
+answer **Yes, always; allow access even if QuickBooks is not running**. Results go to
+`discovery_output\` (ignored by git); `summary.txt` is the short version.
+
 ## Tests
 
 ```powershell
