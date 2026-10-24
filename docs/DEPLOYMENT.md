@@ -1,8 +1,7 @@
 # Deployment (office server)
 
 Target: the always-on Windows server that also runs QuickBooks Desktop. One process serves the app
-and runs the QB sync. This covers the manual setup; automating it as a Windows service plus a GitHub
-self-hosted runner is PLAN step 5.
+and runs the QB sync. This covers the manual setup; automating updates with a GitHub self-hosted runner is PLAN step 5.
 
 ## 1. Folders
 
@@ -10,7 +9,7 @@ self-hosted runner is PLAN step 5.
 |---|---|---|
 | Code | `C:\Apps\JobCostTracker` | `git clone`; replaced on each deploy |
 | Data | `C:\AppData\JobCostTracker` | `jobs.db` lives here. **Never inside the code folder** |
-| Backups | `D:\Backups\JobCostTracker` | Ideally a different disk, or a folder your offsite backup covers |
+| Backups | `D:\Backups\JobCostTracker` | Pre-update copies only (see section 5) |
 
 ## 2. Install
 
@@ -51,27 +50,27 @@ New-NetFirewallRule -DisplayName "Job Cost Tracker" -Direction Inbound -Protocol
 
 Users open `http://<server-name>:8000` and can "Install app" from Edge/Chrome.
 
-**Keeping it running (until step 5):** a Task Scheduler task that runs at startup, whether or not
-anyone is logged in, as a service account that can open QuickBooks:
+**Keeping it running:** the QuickBooks SDK only works reliably inside a signed-in Windows session, so the
+app does **not** run as a Windows service. It runs under a dedicated account that stays signed in with a
+locked screen:
 
-- Program: `C:\Apps\JobCostTracker\.venv\Scripts\python.exe`
-- Arguments: `run.py`
-- Start in: `C:\Apps\JobCostTracker`
-- Settings: restart on failure every 1 minute
+1. Create a dedicated local/domain account (e.g. `svc-jobcost`) that can open QuickBooks and the company file.
+2. Set Windows to **sign that account in automatically** after a reboot (Sysinternals *Autologon* stores the
+   password encrypted), and lock the screen right after sign-in (or rely on the screen-lock policy).
+3. Task Scheduler task for that account:
+   - Trigger: **At log on** of `svc-jobcost`
+   - Program: `C:\Apps\JobCostTracker\.venv\Scripts\python.exe`, arguments `run.py`, start in `C:\Apps\JobCostTracker`
+   - "Run only when user is logged on"; restart on failure every 1 minute
 
-Step 5 replaces this with a proper Windows service. The QB SDK has session/desktop constraints that
-must be tested on the server first.
+A locked screen is fine; a signed-out account is not.
 
-## 5. Nightly backup
+## 5. Backups
 
-Task Scheduler, daily at 2:00 AM:
+No nightly backup (business decision, 2026-10-23). The database is copied automatically **before every
+update** (step 6) with `scripts.backup_db`, which keeps the newest `JCT_BACKUP_KEEP` copies.
 
-- Program: `C:\Apps\JobCostTracker\.venv\Scripts\python.exe`
-- Arguments: `-m scripts.backup_db`
-- Start in: `C:\Apps\JobCostTracker`
-
-It uses SQLite's backup API, so it's safe while the app is running. It keeps the newest `JCT_BACKUP_KEEP` copies.
-**Test a restore** once: stop the app, copy a backup over `jobs.db`, start the app.
+Note: estimates, change orders, change history and notes exist only in this database, not in QuickBooks.
+A lost disk between updates loses whatever changed since the last update.
 
 ## 6. Updating
 
@@ -81,7 +80,7 @@ cd C:\Apps\JobCostTracker
 git pull
 .\.venv\Scripts\python -m pip install -r requirements.txt
 .\.venv\Scripts\python -m scripts.migrate
-# restart the scheduled task (or service)
+# restart: sign the app account out and back in, or end + run the scheduled task
 ```
 
 The step 5 pipeline runs exactly this order automatically: test → backup → migrate → restart.

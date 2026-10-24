@@ -7,3 +7,4 @@ discovery_output/
 *.db-wal
 *.db-shm
 .env
+.vscode/

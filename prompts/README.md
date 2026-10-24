@@ -56,3 +56,4 @@ What was done, test results, commit(s), memory entry, follow-ups.
 | 2026-10-23 | 01 | [Foundation scaffold](2026-10-23_01_foundation-scaffold.md) | Done |
 | 2026-10-23 | 02 | [Real QB connector + Settings](2026-10-23_02_real-qb-phase.md) | Paused |
 | 2026-10-23 | 03 | [CLAUDE.md rules + agent pipeline](2026-10-23_03_claude-md-agent-pipeline.md) | Done |
+| 2026-10-23 | 04 | [Consolidated open questions + roadmap](2026-10-23_04_open-questions.md) | Done |

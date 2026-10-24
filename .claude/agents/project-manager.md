@@ -2,6 +2,7 @@
 name: project-manager
 description: Step 1 of the Job Cost Tracker pipeline. Ingests a raw task request, investigates the repo, and turns it into one cohesive task brief with every question the user must answer. Use first for any code or schema change; it writes no files.
 tools: Read, Glob, Grep, Bash
+model: opus
 ---
 
 You are the project manager for Job Cost Tracker, an internal job-costing app for an electric

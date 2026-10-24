@@ -17,6 +17,40 @@ Prompt: prompts/<file>.md
 
 ---
 
+## 2026-10-23 — Business decisions + approved roadmap
+
+Prompt: [prompts/2026-10-23_04_open-questions.md](../prompts/2026-10-23_04_open-questions.md)
+
+- **Decisions (from the business):**
+  - QB Enterprise Solutions 24.0 Contractor.
+  - Labor includes burden.
+  - "Invoiced" = total billed, with no separate retainage line.
+  - Trending threshold 85%.
+  - Change orders: numbered `JJJ-YY-CC` and set up as their own QB jobs; approved only; each judged
+    independently against its own estimate.
+  - Overhead = X% of total direct cost; profit is always after overhead.
+  - Every user change is logged with who/when/old → new and an optional reason.
+  - Archive replaces Delete.
+  - Closed jobs sync forever, with post-close costs highlighted.
+  - About 10 LAN users.
+  - Server runs under an auto sign-in, locked account.
+  - No nightly backups; pre-update copy only.
+  - Programmer/QC agents on Sonnet 5.5, PM agent on Opus 5.5.
+- **Rationale:** Change orders are judged separately to show whether each change order was estimated well
+  enough. Overhead before profit keeps profit honest. Closed jobs keep syncing because warranty work and
+  late costs arrive after close. The QB SDK needs a signed-in session, so the app can't run as a service.
+- **Business impact:** Defines the next six pipeline tasks: 05 QB data segregation → 06 85% + Archive → 07
+  change history → 08 change orders → 09 overhead → 10 closed jobs → 02 real QB + Settings.
+- **Implementation notes:** Job/CO numbers are QB-owned; the app never assigns them (assumption A1, approved).
+  CO price/estimates and the overhead rate are app-owned. PLAN.md and DEPLOYMENT.md updated; the code
+  still uses 90% until task 06.
+- **Follow-ups / risks:**
+  - Deferred for review: where the job number lives in QB (Q2) and materials vs subs by account or item
+    (Q4); both come from the discovery script.
+  - Overhead rate value still needed.
+  - Which QB date marks "closed".
+  - Without nightly backups, data entered since the last update is lost if the disk fails (accepted).
+
 ## 2026-10-23 — Rules: QuickBooks one-way data + three-agent pipeline
 
 Prompt: [prompts/2026-10-23_03_claude-md-agent-pipeline.md](../prompts/2026-10-23_03_claude-md-agent-pipeline.md)
