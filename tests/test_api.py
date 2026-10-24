@@ -1,17 +1,4 @@
-import pytest
-from fastapi.testclient import TestClient
-
 from app.qb.fake import FAKE_JOBS, _job
-
-
-@pytest.fixture
-def client(tmp_path, monkeypatch):
-    monkeypatch.setenv("JCT_DATA_DIR", str(tmp_path))
-    monkeypatch.setenv("JCT_QB_MODE", "fake")
-    from app.main import app
-
-    with TestClient(app) as c:
-        yield c
 
 
 ESTIMATES = {"est_labor": 14000, "est_material": 16000, "est_sub": 11000, "est_misc": 1500, "contract": 52000}

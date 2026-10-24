@@ -3,11 +3,20 @@
 Tracks each job's actual costs from QuickBooks Desktop against estimates (labor, material,
 subcontractor, direct expenses / misc, and contract price). See [PLAN.md](PLAN.md) for the full plan.
 
+| Doc | For |
+|---|---|
+| [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Setting up, running and testing on your PC |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | How the code is organized and where new features go |
+| [docs/CONVENTIONS.md](docs/CONVENTIONS.md) | Code rules and the required log → plan → approve process |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Installing, backing up and updating on the office server |
+| [docs/MEMORY.md](docs/MEMORY.md) | Log of features and decisions |
+| [prompts/](prompts/) | Every work request, with its plan and approval |
+
 ## Run it on your PC (fake QuickBooks data)
 
 ```powershell
 py -3.13 -m venv .venv
-.\.venv\Scripts\python -m pip install -r requirements.txt
+.\.venv\Scripts\python -m pip install -r requirements-dev.txt
 .\.venv\Scripts\python -m scripts.seed_demo      # loads 10 sample jobs
 .\.venv\Scripts\python run.py                    # http://localhost:8000
 ```
@@ -37,23 +46,25 @@ answer **Yes, always; allow access even if QuickBooks is not running**. Results 
 .\.venv\Scripts\python -m pytest
 ```
 
-## Settings (environment variables)
+## Settings
 
-| Variable | Default | Meaning |
-|---|---|---|
-| `JCT_QB_MODE` | `fake` | `fake` = sample data; `desktop` = real QuickBooks Desktop (server only, step 3) |
-| `JCT_DATA_DIR` | `./data` | Where `jobs.db` lives. On the server, point this outside the code folder |
-| `JCT_SYNC_MINUTES` | `30` | How often the server pulls from QuickBooks |
-| `JCT_PORT` | `8000` | Web port |
+Environment variables (or a `.env` file), all listed in [.env.example](.env.example). The main ones:
+`JCT_QB_MODE` (`fake` | `desktop`), `JCT_DATA_DIR` (keep outside the code folder on the server),
+`JCT_SYNC_MINUTES`, `JCT_PORT`.
 
 ## Layout
 
 ```
-app/main.py        web API + serves the dashboard
-app/calc.py        over / trending / on-track math
-app/sync.py        pulls costs from QuickBooks into the database
-app/qb/            QuickBooks connectors (fake.py now; desktop connector in step 3)
-app/static/        the dashboard (HTML/CSS/JS, no build step)
-scripts/seed_demo.py
+app/main.py          app factory: routers, static files, startup
+app/api/             HTTP routes + request schemas (no SQL)
+app/services/        business workflows: jobs, notes, users, sync, export
+app/domain/          pure budget math and bucket/status vocabulary
+app/repositories/    all SQL
+app/db/              connection, numbered migrations, backup
+app/qb/              QuickBooks connectors: fake.py now, desktop via qbxml.py in step 3
+app/scheduler.py     background QB sync
+app/static/          dashboard (HTML/CSS + ES modules in js/, no build step)
+scripts/             seed_demo, migrate, backup_db, qb_discover
 tests/
+docs/  prompts/
 ```

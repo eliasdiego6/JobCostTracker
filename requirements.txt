@@ -1,6 +1,5 @@
+# What the app needs to run (server and dev PCs). Dev/test tools: requirements-dev.txt
 fastapi==0.115.6
 uvicorn==0.34.0
 openpyxl==3.1.5
-pytest==8.3.4
-httpx==0.28.1
 pywin32==308; sys_platform == "win32"

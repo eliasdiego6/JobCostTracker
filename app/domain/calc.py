@@ -1,14 +1,8 @@
 """Budget math: over / trending / on-track for each bucket and the job overall."""
 
-BUCKET_LABELS = {
-    "labor": "Labor",
-    "material": "Material",
-    "sub": "Subcontractor",
-    "misc": "Direct expenses / misc",
-}
+from app.domain.buckets import BUCKET_LABELS, STATUS_RANK
 
 TRENDING_THRESHOLD = 0.9  # with no % complete, flag at 90% of estimate used
-STATUS_RANK = {"ok": 0, "trending": 1, "over": 2}
 
 
 def projected(actual: float, pct_complete: float | None) -> float | None:

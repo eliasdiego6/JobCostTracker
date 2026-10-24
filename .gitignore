@@ -6,3 +6,4 @@ discovery_output/
 *.db
 *.db-wal
 *.db-shm
+.env

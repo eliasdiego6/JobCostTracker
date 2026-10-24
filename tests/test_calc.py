@@ -1,4 +1,4 @@
-from app import calc
+from app.domain import calc
 
 
 def job(**overrides):

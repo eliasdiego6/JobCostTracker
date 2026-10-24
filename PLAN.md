@@ -63,6 +63,7 @@ over or under budget.
 ## Build order
 
 1. Project skeleton + **fake QuickBooks mode** + dashboard on fake data ← *done first, no QB needed*
+   - Layered foundation, schema migrations, backup/migrate scripts, dev & deploy docs ← *done 2026-10-23*
 2. **Discovery script** against real QB: list Customer:Jobs, dump one job's costs by account/item.
    Answers: where the job number lives, how labor and subs are posted.
 3. Real QB sync (qbXML via the QB SDK) + Settings screen for account → bucket mapping

@@ -1,0 +1,4 @@
+# Everything for development and CI: the app plus test tools
+-r requirements.txt
+pytest==8.3.4
+httpx==0.28.1

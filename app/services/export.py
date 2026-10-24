@@ -6,8 +6,9 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill
 from openpyxl.utils import get_column_letter
 
+from app.domain.buckets import STATUS_LABELS
+
 MONEY = '"$"#,##0;[Red]-"$"#,##0'
-STATUS_TEXT = {"ok": "On track", "trending": "Trending over", "over": "Over budget"}
 STATUS_FILL = {
     "ok": PatternFill("solid", fgColor="D9F2D9"),
     "trending": PatternFill("solid", fgColor="FDEFC8"),
@@ -29,7 +30,7 @@ def jobs_workbook(jobs: list[dict]) -> bytes:
 
     for j in jobs:
         o = j["overall"]
-        row = [j["job_number"], j["name"], j["customer"], j["pct_complete"], STATUS_TEXT[j["status"]]]
+        row = [j["job_number"], j["name"], j["customer"], j["pct_complete"], STATUS_LABELS[j["status"]]]
         for b in j["buckets"]:
             row += [b["estimate"], b["actual"], b["variance"]]
         row += [o["estimate"], o["actual"], o["contract"], o["invoiced"], o["estimated_profit"], o["projected_profit"], j["synced_at"]]
