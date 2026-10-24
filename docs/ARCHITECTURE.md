@@ -46,6 +46,27 @@ These are two separate concerns, connected only through the `Connector` Protocol
 
 Nothing outside `app/qb/__init__.py` checks the mode.
 
+## Data ownership (Rule 1: QuickBooks is one-way)
+
+Every table and column is either **QB-owned** (a copy of what QuickBooks says, written only by the sync)
+or **app-owned** (entered by users, never touched by the sync). They're combined only when read, in
+services. The app never writes to QuickBooks. Full rule: [CLAUDE.md](../CLAUDE.md). **Any change that adds a
+table or column updates this table.**
+
+| Table | Column(s) | Owner | Written by |
+|---|---|---|---|
+| `jobs` | `id`, `job_number`, `qb_list_id` (the link to QB), `est_labor`, `est_material`, `est_sub`, `est_misc`, `contract`, `pct_complete`, `created_at`, `created_by` | app | Add/edit job (user) |
+| `jobs` ⚠ | `qb_full_name`, `customer` | QB | Copied from QB when the job is added; *should* be sync-only |
+| `jobs` ⚠ | `act_labor`, `act_material`, `act_sub`, `act_misc`, `invoiced`, `synced_at`, `sync_error` | QB | Sync |
+| `transactions` | all | QB | Sync |
+| `notes` | all | app | User |
+| `users`, `user_jobs` | all | app | User |
+| `account_map` | all | app | Startup default (fake mode) / Settings (planned). Controls how QB lines are bucketed; QB never writes it |
+| `meta` | `last_sync` | QB (sync status) | Sync |
+
+⚠ **Known gap:** `jobs` mixes app-owned and QB-owned columns. A planned task moves the QB-owned columns into
+sync-only `qb_` tables. Until then, don't add more QB-owned columns to `jobs`.
+
 ## Request lifecycle (example: add a job)
 
 1. `POST /api/jobs` → `api/routes/jobs.py` validates the body against `schemas.JobIn`.

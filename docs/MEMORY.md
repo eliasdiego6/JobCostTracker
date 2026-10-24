@@ -17,6 +17,31 @@ Prompt: prompts/<file>.md
 
 ---
 
+## 2026-10-23 — Rules: QuickBooks one-way data + three-agent pipeline
+
+Prompt: [prompts/2026-10-23_03_claude-md-agent-pipeline.md](../prompts/2026-10-23_03_claude-md-agent-pipeline.md)
+
+- **Decision:** Added `CLAUDE.md` with two binding rules, plus three Claude Code sub-agents in `.claude/agents/`.
+  - **Rule 1:** QuickBooks data is one-way. Only qbXML queries. QB-owned data is written only by the sync,
+    app-owned data only by users, and the two are combined when read. Corrections are app-owned overrides.
+  - **Rule 2:** every code/schema change goes project-manager (brief + questions) → user approval →
+    programmer → qc-reviewer (PASS/FAIL, max 3 fix rounds, then the user decides).
+- **Rationale:** QuickBooks is the accounting system of record, so the tracker must never alter it, and
+  must never blur what QB said with what users entered. Otherwise nobody can trust the numbers. An
+  independent reviewer that can't edit code catches mistakes the author misses, and every hand-off lands in
+  the prompt log for auditability.
+- **Business impact:** Numbers on the dashboard always trace back to either QuickBooks or a named user's
+  input. Changes are slower to land but reviewed and traceable.
+- **Implementation notes:** Sub-agents can't talk to the user or to each other, so the main session
+  orchestrates: it relays PM questions, sends QC findings back to the same programmer agent, and does
+  no coding itself during pipeline tasks. QC has no Edit/Write tools by design. A Data ownership
+  table was added to `docs/ARCHITECTURE.md`; process rules moved from CONVENTIONS.md into CLAUDE.md.
+- **Follow-ups / risks:**
+  - `jobs` mixes QB-owned and app-owned columns. The next pipeline task splits it into sync-only `qb_`
+    tables and adds a guard test that `app/qb` builds only Query requests.
+  - Prompt #02 (real QB connector + Settings) is paused and resumes through the pipeline after that.
+  - The pipeline costs more tokens and time per change; docs-only work is exempt.
+
 ## 2026-10-23 — Layered foundation (structure only, no behavior change)
 
 Prompt: [prompts/2026-10-23_01_foundation-scaffold.md](../prompts/2026-10-23_01_foundation-scaffold.md)

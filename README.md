@@ -5,6 +5,7 @@ subcontractor, direct expenses / misc, and contract price). See [PLAN.md](PLAN.m
 
 | Doc | For |
 |---|---|
+| [CLAUDE.md](CLAUDE.md) | Project rules: QuickBooks one-way data, the three-agent review pipeline, process |
 | [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Setting up, running and testing on your PC |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | How the code is organized and where new features go |
 | [docs/CONVENTIONS.md](docs/CONVENTIONS.md) | Code rules and the required log → plan → approve process |

@@ -43,16 +43,15 @@
 
 ## Work process (required)
 
-Every request follows this order:
+The process rules live in [CLAUDE.md](../CLAUDE.md) so every Claude Code session loads them:
 
-1. **Log the prompt.** Create `prompts/YYYY-MM-DD_NN_short-slug.md` from the template in
-   `prompts/README.md`, with the request verbatim.
-2. **Clarify.** If scope is unclear, ask questions and record them in the log.
-3. **Plan.** Write the plan in the log (what changes, what doesn't, how it will be verified).
-4. **Approve.** No implementation until the plan is approved; record who approved it and when.
-5. **Implement and verify.** Tests pass and the app is checked in a browser when the UI changed.
-6. **Record.** Add an entry to `docs/MEMORY.md` for any new feature or significant decision, and fill
-   in the prompt log's Outcome section.
+- **Rule 1:** QuickBooks data is a one-way street (QB-owned vs app-owned data).
+- **Rule 2:** every code or schema change goes through the project-manager → programmer → qc-reviewer
+  agents (`.claude/agents/`).
+- Every request: log in `prompts/` → clarify → written plan → explicit approval → implement → record in
+  `docs/MEMORY.md`.
+
+Human developers follow the same rules: log the request, get the plan approved, and get an independent review before merging.
 
 ## Git
 
